@@ -32,6 +32,6 @@ private loadingSubs: Subscription;
 
   ngOnDestroy() {
     this.loadingSubs.unsubscribe();
-  }
+  } 
 
 }
