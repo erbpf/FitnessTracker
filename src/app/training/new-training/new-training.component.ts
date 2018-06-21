@@ -4,8 +4,6 @@ import { Exercise } from '../exercise.model';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from 'angularfire2/firestore';
 import { Subscription } from "rxjs";
-// import { map } from "rxjs/operators";
-import 'rxjs/add/operator/map'
 
 @Component({
   selector: 'app-new-training',
