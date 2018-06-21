@@ -1,17 +1,39 @@
 <section class="new-training" fxLayout fxLayoutAlign="center">
+  <form (ngSubmit)="onStartTraining(f)" #f="ngForm">
   <mat-card fxFlex.xs="100%" fxFlex.gt-xs="400px">
     <mat-card-title fxLayoutAlign="center">Time to start a workout!</mat-card-title>
     <mat-card-content fxLayoutAlign="center">
       <mat-form-field>
-        <mat-select placeholder="Select your exercise">
-          <mat-option *ngFor="let exercise of exercises" [value]="exercise.id">
+        <mat-select placeholder="Select your exercise" ngModel name="exercise" required>
+          <mat-option *ngFor="let exercise of exercises" [value]="exercise.id" >
             {{exercise.name}}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </mat-card-content>
     <mat-card-actions fxLayoutAlign="center">
-      <button type="submit" mat-button color="primary" (click)="onStartTraining()">Start</button>
+      <button type="submit" mat-button color="primary" [disabled]="f.invalid">Start</button>
     </mat-card-actions>
   </mat-card>
+  </form>
 </section>
+
+
+<!-- Bound Property Approach -->
+<!-- <section class="new-training" fxLayout fxLayoutAlign="center">
+  <mat-card fxFlex.xs="100%" fxFlex.gt-xs="400px">
+    <mat-card-title fxLayoutAlign="center">Time to start a workout!</mat-card-title>
+    <mat-card-content fxLayoutAlign="center">
+      <mat-form-field>
+        <mat-select placeholder="Select your exercise" [(value)]="selectedExerciseId">
+          <mat-option *ngFor="let exercise of exercises" [value]="exercise.id" >
+            {{exercise.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions fxLayoutAlign="center">
+      <button type="submit" mat-button color="primary" (click)="onStartTraining()" [disabled]="!selectedExerciseId">Start</button>
+    </mat-card-actions>
+  </mat-card>
+</section> -->
