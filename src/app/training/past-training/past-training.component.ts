@@ -38,6 +38,8 @@ private exChangedSubscription: Subscription;
   }
 
   ngOnDestroy() {
-    this.exChangedSubscription.unsubscribe();
+    if (this.exChangedSubscription) {
+      this.exChangedSubscription.unsubscribe();
+    }
   }
 }

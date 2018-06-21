@@ -9,18 +9,14 @@ import { TrainingService } from './training.service';
 })
 export class TrainingComponent implements OnInit, OnDestroy {
   ongoingTraining = false;
-  trainingSubscription: Subscription;
+  exerciseSubscription: Subscription;
 
   constructor(private trainingService: TrainingService) { }
 
   ngOnInit() {
-    this.trainingSubscription = this.trainingService.exerciseChange.subscribe(exercise => {
+    this.exerciseSubscription = this.trainingService.exerciseChange.subscribe(exercise => {
       this.ongoingTraining = (exercise) ? true : false;
     })
-  }
-
-  ngOnDestroy() {
-    this.trainingSubscription.unsubscribe();
   }
 
   onTrainingStart(p) {   
@@ -28,4 +24,9 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.trainingService.startExercise(p.selectedId);
   }
 
+  ngOnDestroy() {
+    if(this.exerciseSubscription) {
+      this.exerciseSubscription.unsubscribe();
+    }
+  }
 }
