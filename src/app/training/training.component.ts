@@ -28,8 +28,4 @@ export class TrainingComponent implements OnInit, OnDestroy {
     this.trainingService.startExercise(p.selectedId);
   }
 
-  onTrainingEnd() {
-    this.trainingService.stopExercise();
-  }
-
 }
