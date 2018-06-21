@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { TrainingService } from '../training.service';
 import { Exercise } from '../exercise.model';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { Observable } from "rxjs";
+import { Subscription } from "rxjs";
 // import { map } from "rxjs/operators";
 import 'rxjs/add/operator/map'
 
@@ -12,27 +12,18 @@ import 'rxjs/add/operator/map'
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.css']
 })
-export class NewTrainingComponent implements OnInit {
-  exercises: Observable<any>;
-  selectedExerciseId: string;
+export class NewTrainingComponent implements OnInit, OnDestroy {
+  exercises: Exercise[];
+  exerciseSubscription: Subscription;
 
   constructor(private trainingService: TrainingService, private db: AngularFirestore) { }
 
   ngOnInit() {
-    // this.exercises = this.db.collection('availableExercises').valueChanges();
-    //  this.db.collection('availableExercises').snapshotChanges().subscribe(result => {for (const res of result) { console.log(res)});
-    this.exercises = this.db
-      .collection('availableExercises')
-      .snapshotChanges()
-      .map(docArray => {
-        return docArray.map(doc => {
-          return {
-            id: doc.payload.doc.id,
-            ...doc.payload.doc.data()
-          };
-        });
-      });
-   
+    this.exerciseSubscription = this.trainingService.exercisesChange.subscribe(
+      exercises => (this.exercises = exercises)
+    );
+    this.trainingService.fetchAvailableExercises();
+
   }
 
   onStartTraining(form: NgForm) {
@@ -40,8 +31,8 @@ export class NewTrainingComponent implements OnInit {
     this.trainingService.startExercise(form.value.exercise);
   }
 
-  // Bound Property Approach
-  // onStartTraining() {
-  //   this.trainingService.startExercise(this.selectedExerciseId);
-  // }
+  ngOnDestroy() {
+    this.exerciseSubscription.unsubscribe();
+  }
+
 }

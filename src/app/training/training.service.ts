@@ -1,21 +1,38 @@
 import { Exercise } from "./exercise.model";
 import { Subject } from "rxjs";
+import { Injectable } from "@angular/core";
+import { AngularFirestore } from "angularfire2/firestore";
+import { Observable, Subscription } from "rxjs";
+// import { map } from "rxjs/operators";
+import 'rxjs/add/operator/map'
 
+@Injectable()
 export class TrainingService {
     exerciseChange = new Subject<Exercise>();
-
-    private availableExercises: Exercise[] = [
-        { id: 'crunches', name: 'Crunches', duration: 30, calories: 8 },
-        { id: 'touch-toes', name: 'Touch Toes', duration: 180, calories: 15 },
-        { id: 'side-lunges', name: 'Side Lunges', duration: 120, calories: 18 },
-        { id: 'burpees', name: 'Burpees', duration: 60, calories: 8 }
-    ];
+    exercisesChange = new Subject<Exercise[]>();
+    private availableExercises: Exercise[] = [];
     private runningExercise: Exercise;
     private exercises: Exercise[] = [];
 
-    getAvailableExercises() {
-        return this.availableExercises.slice();
-        // return [... this.availableExercises];
+    constructor(private db: AngularFirestore) { }
+
+    fetchAvailableExercises() {
+        this.db
+            .collection('availableExercises')
+            .snapshotChanges()
+            .map(docArray => {
+                return docArray.map(doc => {
+                    return {
+                        id: doc.payload.doc.id,
+                        ...doc.payload.doc.data()
+                    };
+                });
+            })
+            .subscribe((exercises: Exercise[]) => {
+                this.availableExercises = exercises;
+                console.log({...this.availableExercises});
+                this.exercisesChange.next([...this.availableExercises]);
+            });
     }
 
     startExercise(selectedId: string) {
@@ -24,7 +41,7 @@ export class TrainingService {
     }
 
     completeExercise() {
-        this.exercises.push({...this.runningExercise, date: new Date(), state: 'completed'});
+        this.exercises.push({ ...this.runningExercise, date: new Date(), state: 'completed' });
         this.runningExercise = null;
         this.exerciseChange.next(null);
     }
@@ -33,9 +50,10 @@ export class TrainingService {
         this.exercises.push({
             ...this.runningExercise,
             duration: this.runningExercise.duration * (progress / 100),
-            calories:  this.runningExercise.calories * (progress / 100),
-             date: new Date(),
-             state: 'cancelled'});
+            calories: this.runningExercise.calories * (progress / 100),
+            date: new Date(),
+            state: 'cancelled'
+        });
         this.runningExercise = null;
         this.exerciseChange.next(null);
     }
