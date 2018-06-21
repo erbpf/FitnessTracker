@@ -5,6 +5,8 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { AngularFireAuth } from 'angularfire2/auth';
 import { TrainingService } from "../training/training.service";
+import { MatSnackBar } from "@angular/material";
+import { UIService } from "../shared/ui.service";
 
 @Injectable()
 export class AuthService {
@@ -12,7 +14,12 @@ export class AuthService {
     // private user: User;
     private isAuthenticated = false;
 
-    constructor(private router: Router, private afauth: AngularFireAuth, private trainingService: TrainingService) {
+    constructor(
+        private router: Router,
+        private afauth: AngularFireAuth,
+        private trainingService: TrainingService,
+        private snackBar: MatSnackBar,
+        private uiService: UIService) {
 
     }
 
@@ -35,14 +42,20 @@ export class AuthService {
     }
 
     registerUser(authData: AuthData) {
+        this.uiService.loadingStateChanged.next(true);
         this.afauth.auth.createUserWithEmailAndPassword(
             authData.email,
             authData.password
         ).then(result => {
+            this.uiService.loadingStateChanged.next(false);
             console.log(result);
         })
             .catch(error => {
-                console.log(error);
+                this.snackBar.open(error.message, null, {
+                    duration: 3000
+                });
+                this.uiService.loadingStateChanged.next(false);
+                // console.log(error);
             });
 
 
@@ -50,14 +63,19 @@ export class AuthService {
 
 
     login(authData: AuthData) {
+        this.uiService.loadingStateChanged.next(true);
         //AngularFireAuth automatically parses and stores auth token on successful login
         this.afauth.auth.signInWithEmailAndPassword(authData.email, authData.password)
             .then(result => {
                 console.log(result);
-                
+                this.uiService.loadingStateChanged.next(false);
             })
             .catch(error => {
-                console.log(error);
+                this.snackBar.open(error.message, null, {
+                    duration: 3000
+                });
+                this.uiService.loadingStateChanged.next(false);
+                // console.log(error);
             });
 
     }
@@ -70,5 +88,5 @@ export class AuthService {
         return this.isAuthenticated;
     }
 
-    
+
 } 
