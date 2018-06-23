@@ -36,7 +36,6 @@ import { reducers } from './app.reducer';
     AngularFirestoreModule,
     AuthModule,
     StoreModule.forRoot(reducers)
-    // StoreModule.forRoot({ui:appReducer})
   ],
   providers: [
     AuthService,
