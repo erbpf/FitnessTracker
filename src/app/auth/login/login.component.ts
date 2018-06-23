@@ -16,7 +16,6 @@ import * as fromRoot from '../../app.reducer';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   isLoading$: Observable<boolean>;
-  // isLoading: boolean = false;
 private loadingSubs: Subscription;
 
   constructor(
@@ -27,8 +26,7 @@ private loadingSubs: Subscription;
 
   ngOnInit() {
     this.isLoading$ = this.store.select(fromRoot.getIsLoading);
-    // this.isLoading$ = this.store.map(state => state.ui.isLoading);
-        
+           
     this.loginForm = new FormGroup({
       email: new FormControl('', {
         validators: [Validators.required, Validators.email]

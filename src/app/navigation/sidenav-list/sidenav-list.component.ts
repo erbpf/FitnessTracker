@@ -13,17 +13,12 @@ import * as fromRoot from '../../app.reducer';
 export class SidenavListComponent implements OnInit {
   @Output() closeSidenav = new EventEmitter<void>();
   isAuth$: Observable<boolean>;
-  // isAuth: boolean = false;
-  // authSubscription: Subscription;
-
+ 
   constructor(private store: Store<fromRoot.State>, private authService: AuthService) { }
 
   ngOnInit() {
     this.isAuth$ = this.store.select(fromRoot.getIsAuth);
-    
-    // this.authSubscription = this.authService.authChange.subscribe(authStatus => {
-    //   this.isAuth = authStatus;
-    // })
+ 
   }
 
   onClose() {
@@ -34,11 +29,5 @@ export class SidenavListComponent implements OnInit {
     this.onClose();
     this.authService.logout();
   }
-
-  // ngOnDestroy() {
-  //   if (this.authSubscription) {
-  //     this.authSubscription.unsubscribe();
-  //   }
-  // }
 
 }

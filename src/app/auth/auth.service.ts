@@ -1,4 +1,3 @@
-import { User } from "./user.model";
 import { AuthData } from "./auth-data.model";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
@@ -12,9 +11,7 @@ import * as Auth from './auth.actions';
 
 @Injectable()
 export class AuthService {
-    // authChange = new Subject<boolean>();
-    // private isAuthenticated = false;
-
+   
     constructor(
         private router: Router,
         private afauth: AngularFireAuth,
@@ -29,16 +26,12 @@ export class AuthService {
             if (user) {
                 //login
                 this.store.dispatch(new Auth.SetAuthenticated());
-                // this.isAuthenticated = true;
-                // this.authChange.next(true);
                 this.router.navigate(['/training']);
             } else {
                 //logout
                 this.trainingService.cancelSubscriptions();
                 this.store.dispatch(new Auth.SetUnauthenticated());
                 this.router.navigate(['/login']);
-                // this.authChange.next(false);
-                // this.isAuthenticated = false;
             }
         });
     }
@@ -79,10 +72,5 @@ export class AuthService {
     logout() {
         this.afauth.auth.signOut();
     }
-
-    // isAuth() {
-    //     return this.isAuthenticated;
-    // }
-
 
 } 
