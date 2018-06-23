@@ -1,4 +1,4 @@
-import { Action } from '@ngrx/store';
+import { Action, createFeatureSelector, createSelector } from '@ngrx/store';
 
 import { 
     TrainingActions, 
@@ -58,6 +58,11 @@ export function trainingReducer(state = initialState, action: TrainingActions) {
     }
 }
 
-export const getAvailableExercises = (state: TrainingState) => state.availableExercises;
-export const getFinishedExercises = (state: TrainingState) => state.finishedExercises;
-export const getActiveTraining = (state: TrainingState) => state.activeTraining;
+
+// This must match the identifier set in the module
+export const getTrainingState = createFeatureSelector<TrainingState>('training');
+
+// Since this is lazy-loaded, must put selectors here instead of in app.reducer
+export const getAvailableExercises = createSelector(getTrainingState, (state: TrainingState) => state.availableExercises);
+export const getFinishedExercises =  createSelector(getTrainingState, (state: TrainingState) => state.finishedExercises);
+export const getActiveTraining =  createSelector(getTrainingState, (state: TrainingState) => state.activeTraining);
