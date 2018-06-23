@@ -5,8 +5,10 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { AngularFireAuth } from 'angularfire2/auth';
 import { TrainingService } from "../training/training.service";
-import { MatSnackBar } from "@angular/material";
 import { UIService } from "../shared/ui.service";
+import { Store } from "@ngrx/store";
+import * as fromRoot from '../app.reducer';
+import * as UI from '../shared/ui.actions';
 
 @Injectable()
 export class AuthService {
@@ -18,10 +20,9 @@ export class AuthService {
         private router: Router,
         private afauth: AngularFireAuth,
         private trainingService: TrainingService,
-        private snackBar: MatSnackBar,
-        private uiService: UIService) {
-
-    }
+        private uiService: UIService,
+        private store: Store< fromRoot.State >
+    ) { }
 
     initAuthListener() {
         //emits whenever auth state changes
@@ -42,17 +43,26 @@ export class AuthService {
     }
 
     registerUser(authData: AuthData) {
-        this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch(new UI.StartLoading());
+        
+        // this.store.dispatch({type: 'START_LOADING'});
+        // this.uiService.loadingStateChanged.next(true);
         this.afauth.auth.createUserWithEmailAndPassword(
             authData.email,
             authData.password
         ).then(result => {
-            this.uiService.loadingStateChanged.next(false);
+            this.store.dispatch(new UI.StopLoading());
+            
+            // this.uiService.loadingStateChanged.next(false);
+            // this.store.dispatch({type: 'STOP_LOADING'});
             console.log(result);
         })
             .catch(error => {
                 this.uiService.showSnackbar(error.message, null, 3000);
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
+                
+                // this.store.dispatch({type: 'STOP_LOADING'});
+                // this.uiService.loadingStateChanged.next(false);
                 // console.log(error);
             });
 
@@ -61,16 +71,25 @@ export class AuthService {
 
 
     login(authData: AuthData) {
-        this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch(new UI.StartLoading());
+
+        // this.store.dispatch({type: 'START_LOADING'});
+        // this.uiService.loadingStateChanged.next(true);
         //AngularFireAuth automatically parses and stores auth token on successful login
         this.afauth.auth.signInWithEmailAndPassword(authData.email, authData.password)
             .then(result => {
                 console.log(result);
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
+
+                // this.store.dispatch({type: 'STOP_LOADING'});
+                // this.uiService.loadingStateChanged.next(false);
             })
             .catch(error => {
                 this.uiService.showSnackbar(error.message, null, 3000);
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
+                
+                // this.store.dispatch({type: 'STOP_LOADING'});
+                // this.uiService.loadingStateChanged.next(false);
                 // console.log(error);
             });
 
