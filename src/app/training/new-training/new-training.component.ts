@@ -1,41 +1,51 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { TrainingService } from '../training.service';
-import { Exercise } from '../exercise.model';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { Subscription } from "rxjs";
+import { Subscription, Observable } from "rxjs";
+import { Store } from '@ngrx/store';
+
+import { TrainingService } from '../training.service';
+import { Exercise } from '../exercise.model';
 import { UIService } from '../../shared/ui.service';
+import * as fromTraining from '../training.reducer';
+import * as fromRoot from '../../app.reducer';
 
 @Component({
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.css']
 })
-export class NewTrainingComponent implements OnInit, OnDestroy {
-  exercises: Exercise[];
-  exerciseSubscription: Subscription;
-  isLoading: boolean = false;
+export class NewTrainingComponent implements OnInit {
+  exercises$: Observable<Exercise[]>;
+  // exerciseSubscription: Subscription;
+  // isLoading: boolean = false;
+  isLoading$: Observable<boolean>;
   private loadingSubs: Subscription;
 
-  constructor(private trainingService: TrainingService, 
-              private db: AngularFirestore,
-              private uiServics: UIService) { }
+  constructor(private trainingService: TrainingService,
+    private db: AngularFirestore,
+    private uiServics: UIService,
+    private store: Store<fromTraining.State>) { }
 
   ngOnInit() {
-    this.loadingSubs = this.uiServics.loadingStateChanged.subscribe(isLoading => this.isLoading = isLoading);
-    this.exerciseSubscription = this.trainingService.exercisesChange.subscribe(
-      exercises => { 
-        if(exercises != null) {
-          (this.exercises = exercises)
-        } else {
+   this.isLoading$ = this.store.select(fromRoot.getIsLoading);
+   this.exercises$ = this.store.select(fromTraining.getAvailableExercises);
+   
+    // this.loadingSubs = this.uiServics.loadingStateChanged.subscribe(isLoading => this.isLoading = isLoading);
+    // this.exerciseSubscription = this.trainingService.exercisesChange.subscribe(
+    //   exercises => {
+    //     if (exercises != null) {
+    //       (this.exercises = exercises)
+    //     } else {
 
-        }
-      });
-    
+    //     }
+    //   });
+
     this.fetchExercises();
   }
 
   fetchExercises() {
+    console.log('fetching exercises');
     this.trainingService.fetchAvailableExercises();
   }
 
@@ -44,10 +54,10 @@ export class NewTrainingComponent implements OnInit, OnDestroy {
     this.trainingService.startExercise(form.value.exercise);
   }
 
-  ngOnDestroy() {
-    if (this.exerciseSubscription) {
-      this.exerciseSubscription.unsubscribe();
-    }
-  }
+  // ngOnDestroy() {
+  //   if (this.exerciseSubscription) {
+  //     this.exerciseSubscription.unsubscribe();
+  //   }
+  // }
 
 }
