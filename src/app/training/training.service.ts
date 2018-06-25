@@ -3,12 +3,14 @@ import { AngularFirestore } from 'angularfire2/firestore';
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { take } from 'rxjs/operators';
 
 import { Exercise } from './exercise.model';
 import { UIService } from '../shared/ui.service';
 import * as UI from '../shared/ui.actions';
 import * as Training from './training.actions';
 import * as fromTraining from './training.reducer';
+
 
 @Injectable()
 export class TrainingService {
@@ -63,28 +65,41 @@ export class TrainingService {
   }
 
   completeExercise() {
-    this.addDataToDatabase({
-      ...this.runningExercise,
-      date: new Date(),
-      state: 'completed'
+    this.store.select(fromTraining.getActiveTraining).pipe(take(1)).subscribe(ex => {
+      this.addDataToDatabase({
+        ...ex,
+        date: new Date(),
+        state: 'completed'
+      });
+      this.store.dispatch(new Training.StopTraining());
     });
-    this.store.dispatch(new Training.StopTraining());
+    // this.addDataToDatabase({
+    //   ...this.runningExercise,
+    //   date: new Date(),
+    //   state: 'completed'
+    // });
+    // this.store.dispatch(new Training.StopTraining());
   }
 
   cancelExercise(progress: number) {
-    this.addDataToDatabase({
-      ...this.runningExercise,
-      duration: this.runningExercise.duration * (progress / 100),
-      calories: this.runningExercise.calories * (progress / 100),
-      date: new Date(),
-      state: 'cancelled'
+    this.store.select(fromTraining.getActiveTraining).pipe(take(1)).subscribe(ex => { 
+      this.addDataToDatabase({
+        ...ex,
+        duration: ex.duration * (progress / 100),
+        calories: ex.calories * (progress / 100),
+        date: new Date(),
+        state: 'cancelled'
+      });
+
+      this.store.dispatch(new Training.StopTraining());
     });
-    this.store.dispatch(new Training.StopTraining());
+  
+  
   }
 
-  getRunningExercise() {
-    return { ...this.runningExercise };
-  }
+  // getRunningExercise() {
+  //   return { ...this.runningExercise };
+  // }
 
   fetchCompletedOrCancelledExercises() {
     this.fbSubs.push(
