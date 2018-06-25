@@ -11,8 +11,6 @@ import { Observable } from 'rxjs';
   styleUrls: ['./training.component.css']
 })
 export class TrainingComponent implements OnInit {
-  // ongoingTraining = false;
-  // exerciseSubscription: Subscription;
   ongoingTraining$: Observable<boolean>;
 
   constructor(private trainingService: TrainingService,
@@ -20,9 +18,6 @@ export class TrainingComponent implements OnInit {
 
   ngOnInit() {
     this.ongoingTraining$ = this.store.select(fromTraining.getIsTraining);
-    // this.exerciseSubscription = this.trainingService.exerciseChange.subscribe(exercise => {
-    //   this.ongoingTraining = (exercise) ? true : false;
-    // })
   }
 
   onTrainingStart(p) {   
@@ -30,9 +25,5 @@ export class TrainingComponent implements OnInit {
     this.trainingService.startExercise(p.selectedId);
   }
 
-  // ngOnDestroy() {
-  //   if(this.exerciseSubscription) {
-  //     this.exerciseSubscription.unsubscribe();
-  //   }
-  // }
+ 
 }
