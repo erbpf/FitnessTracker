@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from 'angularfire2/firestore';
-import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { take } from 'rxjs/operators';
@@ -14,9 +13,6 @@ import * as fromTraining from './training.reducer';
 
 @Injectable()
 export class TrainingService {
-  exerciseChanged = new Subject<Exercise>();
-  exercisesChanged = new Subject<Exercise[]>();
-  finishedExercisesChanged = new Subject<Exercise[]>();
   private fbSubs: Subscription[] = [];
 
   constructor(
@@ -51,7 +47,6 @@ export class TrainingService {
               null,
               3000
             );
-            this.exercisesChanged.next(null);
           }
         )
     );
