@@ -34,7 +34,6 @@ export class TrainingService {
         .collection('availableExercises')
         .snapshotChanges()
         .map(docArray => {
-          // throw(new Error());
           return docArray.map(doc => {
             return {
               id: doc.payload.doc.id,
@@ -73,12 +72,6 @@ export class TrainingService {
       });
       this.store.dispatch(new Training.StopTraining());
     });
-    // this.addDataToDatabase({
-    //   ...this.runningExercise,
-    //   date: new Date(),
-    //   state: 'completed'
-    // });
-    // this.store.dispatch(new Training.StopTraining());
   }
 
   cancelExercise(progress: number) {
@@ -96,10 +89,6 @@ export class TrainingService {
   
   
   }
-
-  // getRunningExercise() {
-  //   return { ...this.runningExercise };
-  // }
 
   fetchCompletedOrCancelledExercises() {
     this.fbSubs.push(
